@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qspsav"
+version = "0.1.0"
+description = "Read, write, check and convert QSP 5.7.0 and 5.9 save files"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+keywords = ["qsp", "interactive fiction", "save files", "converter"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Games/Entertainment",
+]
+
+[project.scripts]
+qspsav = "qspsav.cli:main"
+
+[tool.setuptools]
+packages = ["qspsav"]

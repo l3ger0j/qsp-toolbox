@@ -1,0 +1,40 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m unittest discover -s tests -t . -v
+
+  engines:
+    # Builds qsp 5.9 and qsp-legacy 5.7.0 and runs the tests that load saves
+    # into the real engines.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build engines
+        run: |
+          git clone --depth 1 https://github.com/QSPFoundation/qsp.git "$RUNNER_TEMP/qsp"
+          git clone --depth 1 https://github.com/QSPFoundation/qsp-legacy.git "$RUNNER_TEMP/qsp-legacy"
+          cmake -S "$RUNNER_TEMP/qsp" -B "$RUNNER_TEMP/build-qsp" -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/build-qsp" -j
+          cmake -S "$RUNNER_TEMP/qsp-legacy" -B "$RUNNER_TEMP/build-legacy" -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$RUNNER_TEMP/build-legacy" -j
+          echo "QSPSAV_LIB59=$RUNNER_TEMP/build-qsp/libqsp.so" >> "$GITHUB_ENV"
+          echo "QSPSAV_LIB570=$RUNNER_TEMP/build-legacy/libqsp-legacy.so" >> "$GITHUB_ENV"
+      - name: Tests with engines
+        run: python -m unittest discover -s tests -t . -v
