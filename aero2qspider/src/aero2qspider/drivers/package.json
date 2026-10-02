@@ -1,0 +1,10 @@
+{
+  "name": "aero2qspider-drivers",
+  "private": true,
+  "type": "module",
+  "description": "QSP 5.9 engine drivers used by aero2qspider (--smoke and --compare)",
+  "dependencies": {
+    "@qsp/converters": "^1.0.1",
+    "@qsp/wasm-engine": "1.6.1"
+  }
+}
